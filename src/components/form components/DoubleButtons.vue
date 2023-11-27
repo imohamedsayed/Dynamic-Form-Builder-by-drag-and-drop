@@ -1,19 +1,28 @@
 <template>
   <div
-    class="form-field d-flex align-items-center mb-3"
+    class="form-field mb-3"
     draggable="true"
     @dragstart="dragStart"
     @dragover.stop
     @click="openSetting"
   >
-    <label class="fw-bold d-block m-0 w-25">{{ state.labelText }} </label>
-    <button :id="state.name1" :class="'btn ' + `btn-${state.type1} ` + 'me-3'">
-      {{ state.button1Label }}
-    </button>
-    <button :id="state.name2" :class="'btn ' + `btn-${state.type2} `">
-      {{ state.button2Label }}
-    </button>
-
+    <div class="form-group d-flex align-items-center" ref="box">
+      <label class="fw-bold d-block m-0 w-50">{{ state.labelText }} </label>
+      <button
+        :id="state.name1"
+        :class="'btn ' + `btn-${state.type1} ` + 'me-3'"
+      >
+        {{ state.button1Label }}
+      </button>
+      <button :id="state.name2" :class="'btn ' + `btn-${state.type2} `">
+        {{ state.button2Label }}
+      </button>
+      <div
+        class="resize-handler"
+        @touchstart.self="touchStart"
+        @touchmove.self="touchMove"
+      ></div>
+    </div>
     <div class="settings" v-if="state.openSettings">
       <p>Button 1</p>
       <label class="d-block">ID / Name</label>
@@ -76,12 +85,12 @@
 </template>
 
 <script>
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useStore } from "vuex";
 export default {
   setup() {
     const store = useStore();
-
+    const box = ref(null);
     const state = reactive({
       formItem: computed(() => store.state.formItem),
       name1: "button1",
@@ -105,7 +114,37 @@ export default {
       e.stopPropagation();
       state.openSettings = false;
     };
-    return { state, dragStart, closeSettings, openSetting };
+    var x, y, w;
+
+    function touchStart(e) {
+      console.log("touchStarted");
+      x = e.touches[0].clientX;
+      y = e.touches[0].clientY;
+      w = box.value.clientWidth;
+      state.openSettings = false;
+    }
+    function touchMove(e) {
+      let mx = e.touches[0].clientX;
+      let my = e.touches[0].clientY;
+
+      let cx = mx - x;
+      let cy = my - y;
+
+      box.value.style.width = box.value.clientWidth + cx + "px";
+      box.value.style.height = box.value.clientHeight + cy + "px";
+
+      state.openSettings = false;
+    }
+
+    return {
+      state,
+      dragStart,
+      closeSettings,
+      openSetting,
+      box,
+      touchStart,
+      touchMove,
+    };
   },
 };
 </script>
@@ -113,6 +152,24 @@ export default {
 <style lang="scss" scoped>
 .form-field {
   position: relative;
+  .form-group {
+    resize: both;
+    overflow: hidden;
+    position: relative;
+    .resize-handler {
+      position: absolute;
+      height: 10px;
+      width: 12px;
+      border: 1px solid #000;
+
+      right: 0px;
+      bottom: 0px;
+      border-top-left-radius: 100%;
+      background: #777;
+      cursor: nwse-resize;
+    }
+  }
+
   &:hover {
     cursor: pointer !important;
   }
@@ -126,6 +183,7 @@ export default {
       cursor: pointer !important;
     }
   }
+
   .settings {
     position: absolute;
     background: #fff;

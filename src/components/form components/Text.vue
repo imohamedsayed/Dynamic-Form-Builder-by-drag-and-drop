@@ -2,19 +2,26 @@
   <div
     class="form-field d-flex align-items-center mb-3"
     draggable="true"
-    @dragstart="dragStart"
+    @dragstart.self="dragStart"
     @dragover.stop
     @click="openSetting"
   >
     <label class="fw-bold d-block m-0 w-25">{{ state.labelText }} </label>
-    <input
-      type="text"
-      :name="state.name"
-      :id="state.name"
-      :placeholder="state.placeholder"
-      :required="state.required"
-      :class="'form-control' + ' ' + `w-${state.inputSize[state.size]}`"
-    />
+    <div class="input-container" ref="inputBox">
+      <input
+        type="text"
+        :name="state.name"
+        :id="state.name"
+        :placeholder="state.placeholder"
+        :required="state.required"
+        class="form-control w-100"
+      />
+      <div
+        class="resize-handler"
+        @touchstart.self="touchStart"
+        @touchmove.self="touchMove"
+      ></div>
+    </div>
 
     <div class="settings" v-if="state.openSettings">
       <label class="d-block">ID / Name</label>
@@ -38,7 +45,7 @@
           type="checkbox"
           v-model="state.required"
         />required</label
-      ><br>
+      ><br />
       <label class="me-4">Size</label>
       <select v-model="state.size">
         <option value="small">small</option>
@@ -54,12 +61,12 @@
 </template>
 
 <script>
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useStore } from "vuex";
 export default {
   setup() {
     const store = useStore();
-
+    const inputBox = ref(null);
     const state = reactive({
       formItem: computed(() => store.state.formItem),
       name: "textInput",
@@ -80,7 +87,6 @@ export default {
       const target = e.target;
       store.dispatch("editFormItem", target);
     };
-
     const openSetting = () => {
       state.openSettings = true;
     };
@@ -88,7 +94,34 @@ export default {
       e.stopPropagation();
       state.openSettings = false;
     };
-    return { state, dragStart, closeSettings, openSetting };
+
+    var x, w;
+    function touchStart(e) {
+      console.log("touchStarted");
+      x = e.touches[0].clientX;
+
+      w = box.value.clientWidth;
+      state.openSettings = false;
+    }
+    function touchMove(e) {
+      let mx = e.touches[0].clientX;
+
+      let cx = mx - x;
+
+      box.value.style.width = w + cx + "px";
+
+      state.openSettings = false;
+    }
+
+    return {
+      state,
+      dragStart,
+      closeSettings,
+      openSetting,
+      inputBox,
+      touchStart,
+      touchMove,
+    };
   },
 };
 </script>
@@ -96,6 +129,24 @@ export default {
 <style lang="scss" scoped>
 .form-field {
   position: relative;
+  .input-container {
+    resize: horizontal;
+    overflow: hidden;
+    position: relative;
+    .resize-handler {
+      position: absolute;
+      height: 10px;
+      width: 10px;
+      border: 1px solid #000;
+
+      right: 0px;
+      bottom: 0px;
+      border-top-left-radius: 100%;
+      background: #777;
+      cursor: ew-resize;
+    }
+  }
+
   &:hover {
     cursor: pointer !important;
   }

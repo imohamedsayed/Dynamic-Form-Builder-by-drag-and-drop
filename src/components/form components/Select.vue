@@ -1,26 +1,34 @@
 <template>
   <div
-    class="form-field d-flex align-items-center mb-3"
+    class="form-field mb-3"
     draggable="true"
     @dragstart="dragStart"
     @dragover.stop
     @click="openSetting"
   >
-    <label class="fw-bold d-block m-0 w-25">{{ state.labelText }} </label>
-    <select
-      :name="state.name"
-      :id="state.name"
-      :placeholder="state.placeholder"
-      :class="'form-control' + ' ' + `w-${state.inputSize[state.size]}`"
-    >
-      <option
-        v-for="(op, index) in state.options"
-        :key="index"
-        :value="state.values[index]"
+    <div class="form-container d-flex align-items-center" ref="box">
+      <label class="fw-bold d-block m-0 w-50">{{ state.labelText }} </label>
+      <select
+        :name="state.name"
+        :id="state.name"
+        :placeholder="state.placeholder"
+        class="form-control"
       >
-        {{ op }}
-      </option>
-    </select>
+        <option
+          v-for="(op, index) in state.options"
+          :key="index"
+          :value="state.values[index]"
+        >
+          {{ op }}
+        </option>
+      </select>
+
+      <div
+        class="resize-handler"
+        @touchstart.self="touchStart"
+        @touchmove.self="touchMove"
+      ></div>
+    </div>
     <div class="settings" v-if="state.openSettings">
       <label class="d-block">ID / Name</label>
       <input class="form-control w-100 mb-4" type="text" v-model="state.name" />
@@ -54,13 +62,6 @@
           }
         "
       ></textarea>
-      <label class="me-4">Size</label>
-      <select v-model="state.size">
-        <option value="small">small</option>
-        <option value="medium">medium</option>
-        <option value="large">large</option>
-        <option value="xLarge">xLarge</option>
-      </select>
       <div class="btn btn-danger d-block mx-auto mt-3" @click="closeSettings">
         close
       </div>
@@ -69,24 +70,18 @@
 </template>
 
 <script>
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useStore } from "vuex";
 export default {
   setup() {
     const store = useStore();
+    const box = ref(null);
 
     const state = reactive({
       formItem: computed(() => store.state.formItem),
       name: "searchInput",
       placeholder: "placeholder",
       labelText: "Select Input",
-      inputSize: {
-        small: "25",
-        medium: "50",
-        large: "75",
-        xLarge: "100",
-      },
-      size: "large",
       options: ["option 1", "option 2"],
       values: [1, 2],
       openSettings: false,
@@ -103,8 +98,36 @@ export default {
       e.stopPropagation();
       state.openSettings = false;
     };
+    var x, y, w;
 
-    return { state, dragStart, closeSettings, openSetting };
+    function touchStart(e) {
+      console.log("touchStarted");
+      x = e.touches[0].clientX;
+      y = e.touches[0].clientY;
+      w = box.value.clientWidth;
+      state.openSettings = false;
+    }
+    function touchMove(e) {
+      let mx = e.touches[0].clientX;
+      let my = e.touches[0].clientY;
+
+      let cx = mx - x;
+      let cy = my - y;
+
+      box.value.style.width = box.value.clientWidth + cx + "px";
+      box.value.style.height = box.value.clientHeight + cy + "px";
+
+      state.openSettings = false;
+    }
+    return {
+      state,
+      dragStart,
+      closeSettings,
+      openSetting,
+      box,
+      touchStart,
+      touchMove,
+    };
   },
 };
 </script>
@@ -112,6 +135,24 @@ export default {
 <style lang="scss" scoped>
 .form-field {
   position: relative;
+  .form-container {
+    resize: both;
+    overflow: hidden;
+    position: relative;
+    .resize-handler {
+      position: absolute;
+      height: 10px;
+      width: 12px;
+      border: 1px solid #000;
+
+      right: 0px;
+      bottom: 0px;
+      border-top-left-radius: 100%;
+      background: #777;
+      cursor: nwse-resize;
+    }
+  }
+
   &:hover {
     cursor: pointer !important;
   }
@@ -125,10 +166,10 @@ export default {
       cursor: pointer !important;
     }
   }
+
   .settings {
     position: absolute;
     background: #fff;
-    width: 220px;
     padding: 10px;
     border: 1px solid #777;
     border-radius: 10px;

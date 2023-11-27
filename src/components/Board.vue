@@ -1,6 +1,6 @@
 <template>
   <form
-    class="form-board"
+    class="form-board p-2"
     @dragover.prevent
     @drop.prevent="drop"
     @dragenter="dragEnter"

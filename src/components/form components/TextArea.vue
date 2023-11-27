@@ -7,13 +7,21 @@
     @click="openSetting"
   >
     <label class="fw-bold d-block m-0 w-25">{{ state.labelText }} </label>
-    <textarea
-      :name="state.name"
-      :id="state.name"
-      :placeholder="state.placeholder"
-      :class="'form-control ' + `w-${state.inputSize[state.size]}`"
-      :required="state.required"
-    ></textarea>
+    <div class="input-container" ref="inputBox">
+      <textarea
+        :name="state.name"
+        :id="state.name"
+        :placeholder="state.placeholder"
+        class="form-control"
+        :required="state.required"
+      ></textarea>
+
+      <div
+        class="resize-handler"
+        @touchstart.self="touchStart"
+        @touchmove.self="touchMove"
+      ></div>
+    </div>
 
     <div class="settings" v-if="state.openSettings">
       <label class="d-block">ID / Name</label>
@@ -38,13 +46,7 @@
           v-model="state.required"
         />required</label
       >
-      <label class="ms-4">Size</label>
-      <select v-model="state.size">
-        <option value="small">small</option>
-        <option value="medium">medium</option>
-        <option value="large">large</option>
-        <option value="xLarge">xLarge</option>
-      </select>
+
       <div class="btn btn-danger d-block mx-auto mt-3" @click="closeSettings">
         close
       </div>
@@ -53,24 +55,19 @@
 </template>
 
 <script>
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useStore } from "vuex";
 export default {
   setup() {
     const store = useStore();
+    const inputBox = ref(null);
+
     const state = reactive({
       formItem: computed(() => store.state.formItem),
       name: "textarea",
       placeholder: "placeholder",
       labelText: "Textarea",
-      inputSize: {
-        small: "25",
-        medium: "50",
-        large: "75",
-        xLarge: "100",
-      },
       required: false,
-      size: "large",
       openSettings: false,
     });
 
@@ -85,7 +82,38 @@ export default {
       e.stopPropagation();
       state.openSettings = false;
     };
-    return { state, dragStart, closeSettings, openSetting };
+
+    var x, y, w;
+
+    function touchStart(e) {
+      console.log("touchStarted");
+      x = e.touches[0].clientX;
+      y = e.touches[0].clientY;
+      w = box.value.clientWidth;
+      state.openSettings = false;
+    }
+    function touchMove(e) {
+      let mx = e.touches[0].clientX;
+      let my = e.touches[0].clientY;
+
+      let cx = mx - x;
+      let cy = my - y;
+
+      box.value.style.width = box.value.clientWidth + cx + "px";
+      box.value.style.height = box.value.clientHeight + cy + "px";
+
+      state.openSettings = false;
+    }
+
+    return {
+      state,
+      dragStart,
+      closeSettings,
+      openSetting,
+      inputBox,
+      touchStart,
+      touchMove,
+    };
   },
 };
 </script>
@@ -103,6 +131,26 @@ export default {
   input {
     &:hover {
       cursor: pointer !important;
+    }
+  }
+  textarea {
+    height: 100%;
+  }
+  .input-container {
+    resize: both;
+    overflow: hidden;
+    position: relative;
+    .resize-handler {
+      position: absolute;
+      height: 10px;
+      width: 10px;
+      border: 1px solid #000;
+
+      right: 0px;
+      bottom: 0px;
+      border-top-left-radius: 100%;
+      background: #777;
+      cursor: nesw-resize;
     }
   }
   .settings {
