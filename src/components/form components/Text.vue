@@ -46,13 +46,7 @@
           v-model="state.required"
         />required</label
       ><br />
-      <label class="me-4">Size</label>
-      <select v-model="state.size">
-        <option value="small">small</option>
-        <option value="medium">medium</option>
-        <option value="large">large</option>
-        <option value="xLarge">xLarge</option>
-      </select>
+
       <div class="btn btn-danger d-block mx-auto mt-3" @click="closeSettings">
         close
       </div>
@@ -72,14 +66,9 @@ export default {
       name: "textInput",
       placeholder: "placeholder",
       labelText: "Text Input",
-      inputSize: {
-        small: "25",
-        medium: "50",
-        large: "75",
-        xLarge: "100",
-      },
+
       required: false,
-      size: "large",
+
       openSettings: false,
     });
 
