@@ -1,6 +1,6 @@
 <template>
   <div
-    class="form-field d-flex align-items-center mb-5"
+    class="form-field d-flex align-items-center mb-3"
     draggable="true"
     @dragstart="dragStart"
     @dragover.stop
@@ -13,6 +13,7 @@
     <button :id="state.name2" :class="'btn ' + `btn-${state.type2} `">
       {{ state.button2Label }}
     </button>
+
     <div class="settings" v-if="state.openSettings">
       <p>Button 1</p>
       <label class="d-block">ID / Name</label>
@@ -36,7 +37,7 @@
 
       <label class="me-4">Color</label>
       <select v-model="state.type1">
-        <option value="small" selected>primary</option>
+        <option value="primary" selected>primary</option>
         <option value="secondary">secondary</option>
         <option value="dark">dark</option>
         <option value="info">info</option>
@@ -60,7 +61,7 @@
 
       <label class="me-4">Color</label>
       <select v-model="state.type2">
-        <option value="small" selected>primary</option>
+        <option value="primary" selected>primary</option>
         <option value="secondary">secondary</option>
         <option value="dark">dark</option>
         <option value="info">info</option>
@@ -131,9 +132,9 @@ export default {
     padding: 10px;
     border: 1px solid #777;
     border-radius: 10px;
-    top: 5%;
+    bottom: 70%;
     left: -40px;
-    transform: translateY(5%);
+    transform: translateY(70%);
     z-index: 100;
   }
 }

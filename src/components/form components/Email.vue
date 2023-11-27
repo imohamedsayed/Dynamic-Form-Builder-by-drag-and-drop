@@ -1,6 +1,6 @@
 <template>
   <div
-    class="form-field d-flex align-items-center mb-5"
+    class="form-field d-flex align-items-center mb-3"
     draggable="true"
     @dragstart="dragStart"
     @dragover.stop

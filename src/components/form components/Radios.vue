@@ -1,13 +1,15 @@
 <template>
   <div
-    class="form-field mb-5"
+    class="form-field mb-3"
     draggable="true"
     @dragstart="dragStart"
     @dragover.stop
     @click="openSetting"
   >
     <div class="form-group row">
-      <label class="col-md-4 col-12 control-label">{{ state.labelText }}</label>
+      <label class="col-md-4 col-12 control-label fw-bold">{{
+        state.labelText
+      }}</label>
       <div class="col-md-4 col-12">
         <div class="check" v-for="(op, index) in state.options" :key="index">
           <label>
@@ -116,7 +118,7 @@ export default {
   .settings {
     position: absolute;
     background: #fff;
-    width: 220px;
+    min-width: 220px;
     padding: 10px;
     border: 1px solid #777;
     border-radius: 10px;

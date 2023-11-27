@@ -1,13 +1,15 @@
 <template>
   <div
-    class="form-field mb-5"
+    class="form-field mb-3"
     draggable="true"
     @dragstart="dragStart"
     @dragover.stop
     @click="openSetting"
   >
     <div class="form-group row">
-      <label class="col-md-4 col-12 control-label">{{ state.labelText }}</label>
+      <label class="col-md-4 col-12 control-label fw-bold">{{
+        state.labelText
+      }}</label>
       <div class="col-md-4 col-12">
         <div class="check" v-for="(op, index) in state.options" :key="index">
           <label>

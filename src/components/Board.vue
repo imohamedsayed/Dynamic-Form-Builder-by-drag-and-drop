@@ -92,6 +92,8 @@ export default {
         const uniqueId = Date.now().toString(); // Generate a unique identifier
         clonedItem.dataset.itemId = uniqueId;
         state.formFields.push(clonedItem);
+        form.value.style.borderColor = "#77777722";
+        form.value.style.borderStyle = "solid";
       }
     };
 
@@ -114,10 +116,12 @@ export default {
     const dragEnter = () => {
       state.isDragOver = true;
       form.value.style.borderColor = "#4caf50";
+      form.value.style.borderStyle = "dashed";
     };
     const dragLeave = (e) => {
       state.isDragOver = false;
-      form.value.style.borderColor = "#777";
+      form.value.style.borderColor = "#77777722";
+      form.value.style.borderStyle = "solid";
     };
     return { drop, dragEnter, dragLeave, form, state };
   },
@@ -129,7 +133,7 @@ form {
   min-height: 85vh;
   padding: 50px;
   width: 100%;
-  border: 1px solid #777;
+  border: 3px solid #77777722;
   border-radius: 5px;
   &.drag-over {
     border-color: #4caf50 !important;

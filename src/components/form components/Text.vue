@@ -1,6 +1,6 @@
 <template>
   <div
-    class="form-field d-flex align-items-center mb-5"
+    class="form-field d-flex align-items-center mb-3"
     draggable="true"
     @dragstart="dragStart"
     @dragover.stop
@@ -38,8 +38,8 @@
           type="checkbox"
           v-model="state.required"
         />required</label
-      >
-      <label class="ms-4">Size</label>
+      ><br>
+      <label class="me-4">Size</label>
       <select v-model="state.size">
         <option value="small">small</option>
         <option value="medium">medium</option>
@@ -119,7 +119,6 @@ export default {
     left: -40px;
     transform: translateY(70%);
     z-index: 100;
-
   }
 }
 </style>
