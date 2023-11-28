@@ -1,10 +1,10 @@
 <template>
   <div
     class="form-field d-flex align-items-center mb-3"
-    draggable="true"
-    @dragstart="dragStart"
-    @dragover.stop
     @click="openSetting"
+    ref="field"
+    @mousedown="mouseDown"
+    style="position: absolute"
   >
     <label class="fw-bold d-block m-0 w-25">{{ state.labelText }} </label>
     <div class="input-container" ref="inputBox">
@@ -46,8 +46,8 @@
           v-model="state.required"
         />required</label
       >
-
-      <div class="btn btn-danger d-block mx-auto mt-3" @click="closeSettings">
+      <div class="btn btn-danger w-100 mt-2" @click="remove">Remove</div>
+      <div class="btn btn-dark d-block mx-auto mt-3" @click="closeSettings">
         close
       </div>
     </div>
@@ -61,6 +61,7 @@ export default {
   setup() {
     const store = useStore();
     const inputBox = ref(null);
+    const field = ref(null);
 
     const state = reactive({
       formItem: computed(() => store.state.formItem),
@@ -102,14 +103,42 @@ export default {
       state.openSettings = false;
     }
 
+    // Drag
+    let offsetX, offsetY;
+
+    const move = (e) => {
+      field.value.style.left = `${e.clientX - offsetX}px`;
+      field.value.style.top = `${e.clientY - offsetY}px`;
+    };
+
+    const mouseDown = (e) => {
+      // initial offset values
+      if (e.target.classList.contains("input-container")) {
+        return;
+      }
+      offsetX = e.clientX - field.value.offsetLeft;
+      offsetY = e.clientY - field.value.offsetTop;
+
+      document.addEventListener("mousemove", move);
+    };
+    document.addEventListener("mouseup", () => {
+      document.removeEventListener("mousemove", move);
+    });
+
+    const remove = (e) => {
+      field.value.parentNode.parentNode.remove();
+    };
+
     return {
       state,
-      dragStart,
       closeSettings,
       openSetting,
       inputBox,
       touchStart,
       touchMove,
+      field,
+      mouseDown,
+      remove,
     };
   },
 };
@@ -117,7 +146,7 @@ export default {
 
 <style lang="scss" scoped>
 .form-field {
-  position: relative;
+  position: absolute;
 
   &:hover {
     cursor: pointer !important;

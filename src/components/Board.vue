@@ -7,6 +7,7 @@
     @dragleave="dragLeave"
     @submit.prevent
     ref="form"
+    style="position: relative; min-height: 85vh"
   >
     <div v-for="item in state.formFields" :key="item.dataset.uniqueId">
       <div v-if="item.dataset.type == 'text'">
@@ -135,8 +136,10 @@ form {
   width: 100%;
   border: 3px solid #77777722;
   border-radius: 5px;
+  position: relative;
   &.drag-over {
     border-color: #4caf50 !important;
   }
+  padding-bottom: 80px;
 }
 </style>
